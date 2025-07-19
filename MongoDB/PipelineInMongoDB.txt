@@ -1,0 +1,61 @@
+[
+  {
+    $match:
+      /**
+       * query: The query in MQL.
+       */
+      {
+        $and: [
+          {
+            pageCount: {
+              $gte: 400
+            }
+          }
+        ]
+      }
+  },
+  {
+    $set:
+      /**
+       * field: The field name
+       * expression: The expression.
+       */
+      {
+        CountAuthors: {
+          $size: "$authors"
+        },
+        publishedYear: {
+          $year: "$publishedDate"
+        }
+      }
+  },
+  {
+    $project:
+      /**
+       * specifications: The fields to
+       *   include or exclude.
+       */
+      {
+        title: 1,
+        pageCount: 1,
+        thumbnailUrl: 1,
+        _id: 0,
+        authors: 1,
+        CountAuthors: 1,
+        publishedYear: 1
+      }
+  },
+  {
+    $group:
+      /**
+       * _id: The id of the group.
+       * fieldN: The first field name.
+       */
+      {
+        _id: "$publishedYear",
+        AvgPages: {
+          $avg: "$pageCount"
+        }
+      }
+  }
+]
