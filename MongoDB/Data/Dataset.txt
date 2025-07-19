@@ -1,0 +1,11 @@
+usuarios:
+[
+  { "_id": 1, "nombre": "Carlos", "edad": 29, "ciudad": "CDMX", "intereses": ["datos", "lectura"] },
+  { "_id": 2, "nombre": "Lucía", "edad": 35, "ciudad": "Guadalajara", "intereses": ["café", "arte"] }
+]
+
+ordenes:
+[
+  { "_id": 101, "cliente_id": 1, "productos": [{ "nombre": "Café", "precio": 50 }, { "nombre": "Pan", "precio": 20 }] },
+  { "_id": 102, "cliente_id": 2, "productos": [{ "nombre": "Té", "precio": 40 }] }
+]
