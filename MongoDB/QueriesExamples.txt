@@ -1,0 +1,5 @@
+{$and:[{pageCount: {$gte: 400}}, {publishedDate: {$eq: [ { $year: "publishedDate" }, 2008 ]}}]}
+
+{$and:[{pageCount: {$gte: 500}}, {$expr: {$eq: [{$year: "$publishedDate"}, 2008]}}]}
+
+{$expr: {$eq: [{$year: "$publishedDate"}, 2008]}}
