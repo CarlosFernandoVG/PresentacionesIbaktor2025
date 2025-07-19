@@ -1,0 +1,359 @@
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| test               |
++--------------------+
+5 rows in set (0.009 sec)
+
+MariaDB [(none)]> CREATE DATABASE IbaktorExamples;
+Query OK, 1 row affected (0.006 sec)
+
+MariaDB [(none)]> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| IbaktorExamples    |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| test               |
++--------------------+
+6 rows in set (0.001 sec)
+
+MariaDB [(none)]> USE IbaktorExamples;
+Database changed
+MariaDB [IbaktorExamples]> SHOW tables;
+Empty set (0.002 sec)
+
+MariaDB [IbaktorExamples]> CREATE TABLE ventas (
+    ->     fecha DATE,
+    ->     producto VARCHAR(100),
+    ->     cantidad INT,
+    ->     precio DECIMAL(10,2)
+    -> );
+Query OK, 0 rows affected (0.052 sec)
+
+MariaDB [IbaktorExamples]> SHOW TABLES;
++---------------------------+
+| Tables_in_IbaktorExamples |
++---------------------------+
+| ventas                    |
++---------------------------+
+1 row in set (0.003 sec)
+
+MariaDB [IbaktorExamples]> LOAD DATA INFILE '/Users/carlosvasquezguerra/Documents/Ibaktor Bootcamp/MATERIALES DANL M4/MariaDB/ventas.csv'
+    -> INTO TABLE ventas
+    -> FIELDS TERMINATED BY ',' 
+    -> ENCLOSED BY '"' 
+    -> LINES TERMINATED BY '\n'
+    -> IGNORE 1 LINES
+    -> (fecha, producto, cantidad, precio);
+Query OK, 9 rows affected (0.026 sec)                
+Records: 9  Deleted: 0  Skipped: 0  Warnings: 0
+
+MariaDB [IbaktorExamples]> SELECT * FROM ventas;
++------------+-----------+----------+--------+
+| fecha      | producto  | cantidad | precio |
++------------+-----------+----------+--------+
+| 2023-01-05 | ProductoA |       10 |  15.50 |
+| 2023-01-10 | ProductoB |        5 |  20.00 |
+| 2023-01-15 | ProductoC |        2 |  50.00 |
+| 2023-02-03 | ProductoA |        4 |  15.50 |
+| 2023-02-10 | ProductoB |        6 |  20.00 |
+| 2023-02-17 | ProductoD |        3 |  40.00 |
+| 2023-03-01 | ProductoA |        8 |  15.50 |
+| 2023-03-05 | ProductoE |        1 | 100.00 |
+| 2023-03-09 | ProductoB |        7 |  20.00 |
++------------+-----------+----------+--------+
+9 rows in set (0.005 sec)
+
+MariaDB [IbaktorExamples]> SELECT fecha
+    -> FROM ventas
+    -> WHERE ventas.producto = 'ProductoA';
++------------+
+| fecha      |
++------------+
+| 2023-01-05 |
+| 2023-02-03 |
+| 2023-03-01 |
++------------+
+3 rows in set (0.005 sec)
+
+MariaDB [IbaktorExamples]> SELECT fecha
+    -> FROM ventas
+    -> WHERE producto = 'ProductoA';
++------------+
+| fecha      |
++------------+
+| 2023-01-05 |
+| 2023-02-03 |
+| 2023-03-01 |
++------------+
+3 rows in set (0.004 sec)
+
+MariaDB [IbaktorExamples]> SELECT SUM(precio)
+    -> FROM ventas
+    -> WHERE producto = 'ProductoB';
++-------------+
+| SUM(precio) |
++-------------+
+|       60.00 |
++-------------+
+1 row in set (0.004 sec)
+
+MariaDB [IbaktorExamples]> SELECT SUM(precio) AS SUM_Precio
+    -> FROM ventas
+    -> WHERE producto = 'ProductoB';
++------------+
+| SUM_Precio |
++------------+
+|      60.00 |
++------------+
+1 row in set (0.003 sec)
+
+MariaDB [IbaktorExamples]> SELECT AVG(precio)
+    -> FROM ventas;
++-------------+
+| AVG(precio) |
++-------------+
+|   32.944444 |
++-------------+
+1 row in set (0.002 sec)
+
+MariaDB [IbaktorExamples]> SELECT precio*cantidad AS SUM_Precio
+    -> FROM ventas
+    -> WHERE producto = 'ProductoB';
++------------+
+| SUM_Precio |
++------------+
+|     100.00 |
+|     120.00 |
+|     140.00 |
++------------+
+3 rows in set (0.002 sec)
+
+MariaDB [IbaktorExamples]> SELECT SUM(precio*cantidad) AS SUM_Precio
+    -> FROM ventas
+    -> WHERE producto = 'ProductoB';
++------------+
+| SUM_Precio |
++------------+
+|     360.00 |
++------------+
+1 row in set (0.001 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto, AVG(precio) AS Precio_Promedio
+    -> FROM ventas
+    -> GROUP BY producto;
++-----------+-----------------+
+| producto  | Precio_Promedio |
++-----------+-----------------+
+| ProductoA |       15.500000 |
+| ProductoB |       20.000000 |
+| ProductoC |       50.000000 |
+| ProductoD |       40.000000 |
+| ProductoE |      100.000000 |
++-----------+-----------------+
+5 rows in set (0.005 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto, AVG(precio*cantidad) AS Precio_Promedio
+    -> FROM ventas
+    -> GROUP BY producto;
++-----------+-----------------+
+| producto  | Precio_Promedio |
++-----------+-----------------+
+| ProductoA |      113.666667 |
+| ProductoB |      120.000000 |
+| ProductoC |      100.000000 |
+| ProductoD |      120.000000 |
+| ProductoE |      100.000000 |
++-----------+-----------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto, AVG(precio*cantidad) AS Precio_Promedio
+    -> FROM ventas
+    -> WHERE Precio_Promedio > 100
+    -> GROUP BY producto;
+ERROR 1054 (42S22): Unknown column 'Precio_Promedio' in 'WHERE'
+MariaDB [IbaktorExamples]> SELECT producto, AVG(precio*cantidad) AS Precio_Promedio
+    -> FROM ventas
+    -> GROUP BY producto
+    -> WHERE Precio_Promedio > 100;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'WHERE Precio_Promedio > 100' at line 4
+MariaDB [IbaktorExamples]> SELECT producto, AVG(precio*cantidad) AS Precio_Promedio
+    -> FROM ventas
+    -> GROUP BY producto
+    -> HAVING Precio_Promedio > 100;
++-----------+-----------------+
+| producto  | Precio_Promedio |
++-----------+-----------------+
+| ProductoA |      113.666667 |
+| ProductoB |      120.000000 |
+| ProductoD |      120.000000 |
++-----------+-----------------+
+3 rows in set (0.002 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto;
++-----------+-------------+
+| producto  | Venta_Total |
++-----------+-------------+
+| ProductoA |      341.00 |
+| ProductoB |      360.00 |
+| ProductoC |      100.00 |
+| ProductoD |      120.00 |
+| ProductoE |      100.00 |
++-----------+-------------+
+5 rows in set (0.002 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> ORDER BY Venta_Total DESC;
++-----------+-------------+
+| producto  | Venta_Total |
++-----------+-------------+
+| ProductoB |      360.00 |
+| ProductoA |      341.00 |
+| ProductoD |      120.00 |
+| ProductoC |      100.00 |
+| ProductoE |      100.00 |
++-----------+-------------+
+5 rows in set (0.001 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> LIMIT 3;
++-----------+-------------+
+| producto  | Venta_Total |
++-----------+-------------+
+| ProductoA |      341.00 |
+| ProductoB |      360.00 |
+| ProductoC |      100.00 |
++-----------+-------------+
+3 rows in set (0.002 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> ORDER BY Venta_Total DESC
+    -> LIMIT 3;
++-----------+-------------+
+| producto  | Venta_Total |
++-----------+-------------+
+| ProductoB |      360.00 |
+| ProductoA |      341.00 |
+| ProductoD |      120.00 |
++-----------+-------------+
+3 rows in set (0.001 sec)
+
+MariaDB [IbaktorExamples]> SELECT producto
+    -> FROM (
+    -> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> ORDER BY Venta_Total DESC
+    -> LIMIT 3;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 7
+MariaDB [IbaktorExamples]> )
+    -> ELECT producto
+    -> FROM (
+    -> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> ORDER BY Venta_Total DESC
+    -> LIMIT 3
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ')
+ELECT producto
+FROM (
+SELECT producto, SUM(precio*cantidad) AS Venta_Total
+...' at line 1
+MariaDB [IbaktorExamples]> SELECT producto                                                                               -> FROM (
+    -> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> ORDER BY Venta_Total DESC
+    -> LIMIT 3
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 8
+MariaDB [IbaktorExamples]> SELECT producto
+    -> FROM (
+    -> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> ORDER BY Venta_Total DESC
+    -> LIMIT 3
+    -> ) AS TOP_3 ;
++-----------+
+| producto  |
++-----------+
+| ProductoB |
+| ProductoA |
+| ProductoD |
++-----------+
+3 rows in set (0.005 sec)
+
+MariaDB [IbaktorExamples]> WITH TOP_3 AS( 
+    -> SELECT producto, SUM(precio*cantidad) AS Venta_Total
+    -> FROM ventas
+    -> GROUP BY producto
+    -> ORDER BY Venta_Total DESC
+    -> LIMIT 3)
+    -> 
+    -> SELECT producto
+    -> FROM TOP_3;
+ERROR 1932 (42S02): Table 'IbaktorExamples.ventas' doesn't exist in engine
+MariaDB [IbaktorExamples]> SHOW ENGINES;                                             +--------------------+---------+-------------------------------------------------------------------------------------------------+--------------+------+------------+
+| Engine             | Support | Comment                                                                                         | Transactions | XA   | Savepoints |
++--------------------+---------+-------------------------------------------------------------------------------------------------+--------------+------+------------+
+| MEMORY             | YES     | Hash based, stored in memory, useful for temporary tables                                       | NO           | NO   | NO         |
+| CSV                | YES     | Stores tables as CSV files                                                                      | NO           | NO   | NO         |
+| PERFORMANCE_SCHEMA | YES     | Performance Schema                                                                              | NO           | NO   | NO         |
+| Aria               | YES     | Crash-safe tables with MyISAM heritage. Used for internal temporary tables and privilege tables | NO           | NO   | NO         |
+| MyISAM             | YES     | Non-transactional engine with good performance and small data footprint                         | NO           | NO   | NO         |
+| MRG_MyISAM         | YES     | Collection of identical MyISAM tables                                                           | NO           | NO   | NO         |
+| InnoDB             | DEFAULT | Supports transactions, row-level locking, foreign keys and encryption for tables                | YES          | YES  | YES        |
+| SEQUENCE           | YES     | Generated tables filled with sequential values                                                  | YES          | NO   | YES        |
++--------------------+---------+-------------------------------------------------------------------------------------------------+--------------+------+------------+
+8 rows in set (0.007 sec)
+
+MariaDB [IbaktorExamples]> DROP TABLE ventas;
+Query OK, 0 rows affected (0.060 sec)
+
+MariaDB [IbaktorExamples]> SHOW TABLES;
+Empty set (0.003 sec)
+
+MariaDB [IbaktorExamples]> CREATE TABLE ventas (
+    ->     fecha DATE,
+    ->     producto VARCHAR(50),
+    ->     cantidad INT,
+    ->     precio DECIMAL(10,2),
+    ->     region VARCHAR(50)
+    -> ) ENGINE=ColumnStore;
+ERROR 1286 (42000): Unknown storage engine 'ColumnStore'
+MariaDB [IbaktorExamples]> CREATE TABLE ventas (
+    ->     fecha DATE,
+    ->     producto VARCHAR(50),
+    ->     cantidad INT,
+    ->     precio DECIMAL(10,2),
+    ->     region VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.039 sec)
+
+MariaDB [IbaktorExamples]> INSERT INTO ventas VALUES
+    ->     ('2024-01-01', 'Laptop', 5, 999.99, 'Norte'),
+    ->     ('2024-01-01', 'Mouse', 10, 24.99, 'Sur'),
+    ->     ('2024-01-02', 'Laptop', 3, 999.99, 'Centro');
+Query OK, 3 rows affected (0.010 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [IbaktorExamples]> 
