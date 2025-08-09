@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráfico desde API</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h2>Participación de Criptomonedas (API)</h2>
+<p id="status">Cargando datos...</p>
+<canvas id="graficoAPI"></canvas>
+
+<script>
+async function cargarDatos() {
+    const url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cardano&vs_currencies=usd";
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Error al consultar API");
+    const data = await res.json();
+
+    return {
+        etiquetas: Object.keys(data).map(c => c.charAt(0).toUpperCase() + c.slice(1)),
+        valores: Object.values(data).map(c => c.usd)
+    };
+}
+
+function crearGrafico(datos) {
+    new Chart(document.getElementById('graficoAPI'), {
+        type: 'doughnut',
+        data: {
+            labels: datos.etiquetas,
+            datasets: [{
+                data: datos.valores,
+                backgroundColor: [
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ]
+            }]
+        }
+    });
+}
+
+async function main() {
+    document.getElementById("status").textContent = "Cargando datos...";
+    try {
+        const datos = await cargarDatos();
+        document.getElementById("status").textContent = "Datos cargados ✅";
+        crearGrafico(datos);
+    } catch (error) {
+        document.getElementById("status").textContent = "Error cargando datos ❌";
+        console.error(error);
+    }
+}
+
+main();
+</script>
+</body>
+</html>

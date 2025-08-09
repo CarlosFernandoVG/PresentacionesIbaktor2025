@@ -1,0 +1,4 @@
+{
+    "meses": ["Enero", "Febrero", "Marzo", "Abril", "Mayo"],
+    "ventas": [1200, 1500, 1800, 1300, 2000]
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ejemplo básico de Highcharts</title>
+  <!-- Cargar librería Highcharts -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <style>
+    #container {
+      width: 80%;
+      max-width: 700px;
+      height: 400px;
+      margin: 40px auto;
+    }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Gráfico de columnas con Highcharts</h2>
+
+<div id="container"></div>
+
+<script>
+  Highcharts.chart('container', {
+    chart: {
+      type: 'column'
+    },
+    title: {
+      text: 'Ventas Mensuales'
+    },
+    xAxis: {
+      categories: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
+      title: {
+        text: 'Meses'
+      }
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: 'Ventas (en USD)'
+      }
+    },
+    series: [{
+      name: 'Ventas',
+      data: [1200, 1500, 1800, 1300, 2000],
+      color: '#7cb5ec'
+    }],
+    tooltip: {
+      valuePrefix: '$'
+    },
+    credits: {
+      enabled: false
+    }
+  });
+</script>
+
+</body>
+</html>

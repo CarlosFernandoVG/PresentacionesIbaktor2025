@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cargar datos CSV o JSON y graficar</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <h2>Carga archivo CSV o JSON para graficar</h2>
+  <input type="file" id="inputArchivo" accept=".csv,.json" />
+
+  <canvas id="miGrafico" width="600" height="400"></canvas>
+
+  <script>
+    const ctx = document.getElementById('miGrafico').getContext('2d');
+    let chart;
+
+    // Función para procesar CSV simple (nombre, valor)
+    function procesarCSV(texto) {
+      const filas = texto.trim().split('\n').map(linea => linea.split(','));
+      const encabezados = filas.shift();
+      const etiquetas = [];
+      const datos = [];
+      for (const fila of filas) {
+        etiquetas.push(fila[0]);
+        datos.push(Number(fila[1]));
+      }
+      return { etiquetas, datos };
+    }
+
+    // Función para procesar JSON simple [{nombre, valor}, ...]
+    function procesarJSON(texto) {
+      const data = JSON.parse(texto);
+    
+      if (data.meses && data.ventas && Array.isArray(data.meses) && Array.isArray(data.ventas)) {
+        return {
+          etiquetas: data.meses,
+          datos: data.ventas.map(Number)  // por si vienen como strings
+        };
+      } else {
+        throw new Error('JSON no tiene la estructura esperada { meses: [], ventas: [] }');
+      }
+    }
+
+    // Función para crear o actualizar gráfico
+    function crearActualizarGrafico(etiquetas, datos) {
+      if(chart) {
+        chart.data.labels = etiquetas;
+        chart.data.datasets[0].data = datos;
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: etiquetas,
+            datasets: [{
+              label: 'Valores',
+              data: datos,
+              backgroundColor: 'rgba(54, 162, 235, 0.6)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      }
+    }
+
+    document.getElementById('inputArchivo').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+
+      const texto = await file.text();
+
+      let etiquetas, datos;
+
+      if(file.name.endsWith('.csv')) {
+        try {
+          ({ etiquetas, datos } = procesarCSV(texto));
+          crearActualizarGrafico(etiquetas, datos);
+        } catch(err) {
+          alert('Error procesando CSV: ' + err.message);
+        }
+      } else if(file.name.endsWith('.json')) {
+        try {
+          ({ etiquetas, datos } = procesarJSON(texto));
+          crearActualizarGrafico(etiquetas, datos);
+        } catch(err) {
+          alert('Error procesando JSON: ' + err.message);
+        }
+      } else {
+        alert('Formato no soportado. Selecciona un CSV o JSON');
+      }
+    });
+  </script>
+
+</body>
+</html>

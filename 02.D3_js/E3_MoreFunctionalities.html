@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gráfico de barras con carga CSV, filtro y zoom - D3.js</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    #inputCSV {
+      margin-bottom: 10px;
+    }
+    #filtro {
+      margin-bottom: 20px;
+    }
+    svg {
+      border: 1px solid #ccc;
+    }
+    .bar {
+      fill: steelblue;
+      cursor: pointer;
+    }
+    .bar:hover {
+      fill: orange;
+    }
+    .tooltip {
+      position: absolute;
+      background: #333;
+      color: white;
+      padding: 6px;
+      border-radius: 4px;
+      pointer-events: none;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Gráfico de Barras con CSV, filtro y zoom (D3.js)</h2>
+
+<input type="file" id="inputCSV" accept=".csv" />
+<br/>
+<input type="text" id="filtro" placeholder="Filtrar por categoría..." disabled />
+
+<div id="grafico"></div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  const margin = {top: 30, right: 30, bottom: 70, left: 60},
+        width = 800 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+  const svg = d3.select("#grafico")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .call(d3.zoom().scaleExtent([1, 5]).on("zoom", zoomed))
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleBand().padding(0.2).range([0, width]);
+  const y = d3.scaleLinear().range([height, 0]);
+
+  const xAxisGroup = svg.append("g")
+    .attr("transform", `translate(0,${height})`);
+  const yAxisGroup = svg.append("g");
+
+  const tooltip = d3.select("#tooltip");
+
+  let datosOriginales = [];
+
+  // Función para dibujar gráfico con datos filtrados o completos
+  function dibujar(datos) {
+    x.domain(datos.map(d => d.categoria));
+    y.domain([0, d3.max(datos, d => d.valor)]).nice();
+
+    xAxisGroup.call(d3.axisBottom(x));
+    yAxisGroup.call(d3.axisLeft(y));
+
+    const bars = svg.selectAll(".bar")
+      .data(datos, d => d.categoria);
+
+    // Entradas
+    bars.enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", d => x(d.categoria))
+      .attr("width", x.bandwidth())
+      .attr("y", y(0))
+      .attr("height", 0)
+      .on("mousemove", (event, d) => {
+        const [mx, my] = d3.pointer(event);
+        tooltip.style("opacity", 1)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px")
+          .html(`<strong>${d.categoria}</strong><br/>Valor: ${d.valor}`);
+      })
+      .on("mouseout", () => tooltip.style("opacity", 0))
+      .transition()
+      .duration(800)
+      .attr("y", d => y(d.valor))
+      .attr("height", d => height - y(d.valor));
+
+    // Actualización
+    bars.transition()
+      .duration(800)
+      .attr("x", d => x(d.categoria))
+      .attr("width", x.bandwidth())
+      .attr("y", d => y(d.valor))
+      .attr("height", d => height - y(d.valor));
+
+    // Salidas
+    bars.exit()
+      .transition()
+      .duration(500)
+      .attr("y", y(0))
+      .attr("height", 0)
+      .remove();
+  }
+
+  // Zoom y pan
+  function zoomed(event) {
+    const transform = event.transform;
+    const xz = transform.rescaleX(x);
+    xAxisGroup.call(d3.axisBottom(xz));
+    svg.selectAll(".bar")
+      .attr("x", d => xz(d.categoria))
+      .attr("width", xz.bandwidth ? xz.bandwidth() : x.bandwidth());
+  }
+
+  // Filtrar datos por categoría (texto)
+  function filtrar(texto) {
+    texto = texto.toLowerCase();
+    const datosFiltrados = datosOriginales.filter(d => d.categoria.toLowerCase().includes(texto));
+    dibujar(datosFiltrados);
+  }
+
+  // Manejo archivo CSV
+  document.getElementById("inputCSV").addEventListener("change", function(e) {
+    const archivo = e.target.files[0];
+    if (!archivo) return;
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const texto = event.target.result;
+      // Suponemos CSV con columnas: categoria,valor
+      const filas = texto.trim().split('\n');
+      datosOriginales = filas.slice(1).map(fila => {
+        const [categoria, valor] = fila.split(',');
+        return { categoria, valor: +valor };
+      });
+
+      document.getElementById("filtro").disabled = false;
+      document.getElementById("filtro").value = "";
+      dibujar(datosOriginales);
+    };
+    reader.readAsText(archivo);
+  });
+
+  document.getElementById("filtro").addEventListener("input", function(e) {
+    filtrar(e.target.value);
+  });
+</script>
+
+</body>
+</html>

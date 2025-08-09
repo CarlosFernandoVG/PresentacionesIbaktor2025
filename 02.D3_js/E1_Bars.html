@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ejemplo básico de D3.js - Gráfico de barras</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+    .bar {
+      fill: steelblue;
+    }
+    .bar:hover {
+      fill: orange;
+    }
+    .axis-label {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Gráfico de barras con D3.js</h2>
+  <svg width="600" height="300"></svg>
+
+  <script>
+    const data = [25, 40, 35, 60, 20, 65, 75];
+
+    const svg = d3.select("svg"),
+      width = +svg.attr("width"),
+      height = +svg.attr("height"),
+      margin = { top: 20, right: 20, bottom: 30, left: 40 };
+
+    const x = d3
+      .scaleBand()
+      .domain(d3.range(data.length))
+      .range([margin.left, width - margin.right])
+      .padding(0.1);
+
+    const y = d3
+      .scaleLinear()
+      .domain([0, d3.max(data)])
+      .nice()
+      .range([height - margin.bottom, margin.top]);
+
+    // Crear barras
+    svg
+      .append("g")
+      .attr("fill", "steelblue")
+      .selectAll("rect")
+      .data(data)
+      .join("rect")
+      .attr("class", "bar")
+      .attr("x", (d, i) => x(i))
+      .attr("y", (d) => y(d))
+      .attr("height", (d) => y(0) - y(d))
+      .attr("width", x.bandwidth());
+
+    // Eje X
+    svg
+      .append("g")
+      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(d3.axisBottom(x).tickFormat(i => i + 1).tickSizeOuter(0))
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", margin.bottom - 5)
+      .attr("fill", "#000")
+      .attr("text-anchor", "middle")
+      .attr("class", "axis-label")
+      .text("Categorías");
+
+    // Eje Y
+    svg
+      .append("g")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y))
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -height / 2)
+      .attr("y", -margin.left + 15)
+      .attr("fill", "#000")
+      .attr("text-anchor", "middle")
+      .attr("class", "axis-label")
+      .text("Valores");
+  </script>
+</body>
+</html>

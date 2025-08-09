@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gráfico desde CSV</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <h2>Cargar archivo CSV y graficar</h2>
+  <input type="file" id="inputCSV" accept=".csv" />
+
+  <canvas id="graficoCSV" width="600" height="400"></canvas>
+
+  <script>
+    const ctx = document.getElementById('graficoCSV').getContext('2d');
+    let chart;
+
+    function procesarCSV(texto) {
+      const filas = texto.trim().split('\n').map(linea => linea.split(','));
+      const encabezados = filas.shift();
+      const etiquetas = [];
+      const datos = [];
+      for (const fila of filas) {
+        etiquetas.push(fila[0]);
+        datos.push(Number(fila[1]));
+      }
+      return { etiquetas, datos };
+    }
+
+    function crearActualizarGrafico(etiquetas, datos) {
+      if(chart) {
+        chart.data.labels = etiquetas;
+        chart.data.datasets[0].data = datos;
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: etiquetas,
+            datasets: [{
+              label: 'Valores',
+              data: datos,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      }
+    }
+
+    document.getElementById('inputCSV').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      const texto = await file.text();
+      try {
+        const { etiquetas, datos } = procesarCSV(texto);
+        crearActualizarGrafico(etiquetas, datos);
+      } catch(err) {
+        alert('Error procesando CSV: ' + err.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

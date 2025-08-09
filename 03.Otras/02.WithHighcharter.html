@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ejemplo Avanzado Highcharts - Múltiples Gráficos</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f9f9f9;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .chart-container {
+      width: 90%;
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chart-container">
+    <h2>Ventas Mensuales - Gráfico de Columnas con Zoom y Exportación</h2>
+    <div id="chart-column"></div>
+  </div>
+
+  <div class="chart-container">
+    <h2>Comparación de Crecimiento - Gráfico de Línea con Zoom</h2>
+    <div id="chart-line"></div>
+  </div>
+
+  <div class="chart-container">
+    <h2>Distribución por Categoría - Gráfico de Dona</h2>
+    <div id="chart-donut"></div>
+  </div>
+
+<script>
+  // Gráfico de Columnas
+  Highcharts.chart('chart-column', {
+    chart: {
+      type: 'column',
+      zoomType: 'x',  // Zoom horizontal
+    },
+    title: {
+      text: 'Ventas Mensuales 2025'
+    },
+    xAxis: {
+      categories: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto'],
+      crosshair: true,
+      title: { text: 'Meses' }
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: 'Ventas (USD)'
+      }
+    },
+    legend: {
+      enabled: true,
+      layout: 'horizontal',
+      align: 'center',
+      verticalAlign: 'bottom',
+      itemHoverStyle: { color: '#FF6600' }
+    },
+    tooltip: {
+      shared: true,
+      headerFormat: '<b>{point.key}</b><br/>',
+      pointFormat: '{series.name}: <b>${point.y}</b><br/>',
+      backgroundColor: 'rgba(255,255,255,0.9)',
+      borderColor: '#333',
+      borderRadius: 8,
+      style: { color: '#000', fontWeight: 'bold' }
+    },
+    series: [{
+      name: 'Electrónica',
+      data: [1200, 1400, 1350, 1600, 1800, 1900, 2100, 2300],
+      color: '#7cb5ec'
+    }, {
+      name: 'Ropa',
+      data: [900, 1000, 950, 1100, 1200, 1250, 1400, 1500],
+      color: '#434348'
+    }],
+    exporting: {
+      enabled: true,
+      buttons: {
+        contextButton: {
+          menuItems: ['downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS', 'viewData']
+        }
+      }
+    },
+    responsive: {
+      rules: [{
+        condition: { maxWidth: 600 },
+        chartOptions: {
+          legend: { enabled: false },
+          yAxis: { labels: { enabled: false } }
+        }
+      }]
+    }
+  });
+
+  // Gráfico de Línea
+  Highcharts.chart('chart-line', {
+    chart: {
+      type: 'line',
+      zoomType: 'xy',
+      panning: true,
+      panKey: 'shift'
+    },
+    title: { text: 'Crecimiento anual comparado' },
+    xAxis: {
+      categories: ['2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+      title: { text: 'Año' }
+    },
+    yAxis: {
+      title: { text: 'Crecimiento (%)' },
+      min: 0,
+      max: 100
+    },
+    legend: {
+      layout: 'vertical',
+      align: 'right',
+      verticalAlign: 'middle',
+      itemHoverStyle: { color: '#FF6600' }
+    },
+    tooltip: {
+      shared: true,
+      valueSuffix: '%',
+      backgroundColor: 'rgba(255,255,255,0.9)',
+      borderColor: '#333',
+      borderRadius: 8,
+      style: { color: '#000', fontWeight: 'bold' }
+    },
+    series: [{
+      name: 'Producto A',
+      data: [10, 20, 35, 50, 65, 75, 90],
+      color: '#90ed7d'
+    }, {
+      name: 'Producto B',
+      data: [5, 15, 25, 45, 55, 65, 80],
+      color: '#f7a35c'
+    }],
+    exporting: { enabled: true },
+    responsive: {
+      rules: [{
+        condition: { maxWidth: 600 },
+        chartOptions: {
+          legend: { layout: 'horizontal', align: 'center', verticalAlign: 'bottom' }
+        }
+      }]
+    }
+  });
+
+  // Gráfico de Dona
+  Highcharts.chart('chart-donut', {
+    chart: {
+      type: 'pie'
+    },
+    title: {
+      text: 'Distribución de ventas por categoría'
+    },
+    plotOptions: {
+      pie: {
+        innerSize: '60%',
+        depth: 45,
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: true,
+          format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+        },
+        showInLegend: true
+      }
+    },
+    legend: {
+      align: 'center',
+      verticalAlign: 'bottom',
+      layout: 'horizontal',
+      itemHoverStyle: { color: '#FF6600' }
+    },
+    tooltip: {
+      pointFormat: '{series.name}: <b>{point.y} ventas</b><br/>Porcentaje: <b>{point.percentage:.1f}%</b>'
+    },
+    series: [{
+      name: 'Ventas',
+      colorByPoint: true,
+      data: [
+        { name: 'Electrónica', y: 4500, color: '#7cb5ec' },
+        { name: 'Ropa', y: 3200, color: '#434348' },
+        { name: 'Alimentos', y: 2700, color: '#90ed7d' },
+        { name: 'Hogar', y: 1500, color: '#f7a35c' }
+      ]
+    }],
+    exporting: { enabled: true }
+  });
+</script>
+
+</body>
+</html>

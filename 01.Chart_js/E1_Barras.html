@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+ <html lang="es">
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Título de la Página</title>
+ <!-- Enlaces a hojas de estilo CSS, scripts de JavaScript y otros elementos del head -->
+ <script src="https://cdn.jsdelivr.net/npm/chart.js">
+</script>
+ </head>
+ <body>
+ <!-- Contenido principal de la página -->
+ <header>
+ <!-- Cabecera de la página, a menudo contiene navegación y logotipo -->
+ </header>
+ <nav>
+ <!-- Navegación principal -->
+ </nav>
+ <main>
+ <canvas id="miGrafico">
+</canvas>
+ <!-- Contenido principal y único de la página -->
+ <section>
+ <!-- Secciones de contenido dentro del main -->
+ </section>
+ <article>
+ <!-- Artículos o entradas independientes dentro de una sección -->
+ </article>
+ </main>
+ <footer>
+ <!-- Pie de página con información de contacto, derechos de autor, etc. -->
+ </footer>
+ <!-- Scripts de JavaScript al final para una carga de página más rápida --> 
+ <script>
+ 	var ctx = document.getElementById('miGrafico').getContext('2d');
+	var miGrafico = new 
+	Chart(ctx, { 
+	type: 'bar', 
+	data: 
+	{ 
+		labels: ['Rojo', 'Azul', 'Verde', 'Amarillo'], 
+		datasets: [{
+			label: 'Mi Primer Dataset', 
+			data: [10, 20, 30, 40], 
+			backgroundColor: [
+				'rgba(255, 99, 132, 0.2)', 
+				'rgba(54, 162, 235, 0.2)', 
+				'rgba(75, 192, 192, 0.2)', 
+				'rgba(255, 206, 86, 0.2)'
+			]
+		}
+	]}, 
+	options: { 
+		scales: { 
+			yAxes: [{ticks:{ beginAtZero:true } }] } 
+		} 
+		}
+	); 
+
+ </script>
+</body> </html> 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mapa de Leaflet</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* Define el tamaño del mapa */
+        #mapa {
+            height: 500px;
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="mapa"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Coordenadas de la Ciudad de México
+        var latitud = 19.4326;
+        var longitud = -99.1332;
+        var nivelZoom = 13;
+
+        // Inicializa el mapa y lo centra en las coordenadas
+        var mapa = L.map('mapa').setView([latitud, longitud], nivelZoom);
+
+        // Añade la capa de tiles de OpenStreetMap
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mapa);
+
+        // Añade un marcador en la ubicación
+        var marcador = L.marker([latitud, longitud]).addTo(mapa);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ejemplo avanzado Three.js con múltiples objetos</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      padding: 20px;
+    }
+    h2 {
+      margin: 0;
+    }
+    .canvas-container {
+      width: 90vw;
+      max-width: 900px;
+      height: 400px;
+      background: #111;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #000;
+      position: relative;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Cubo giratorio con material normal</h2>
+  <div class="canvas-container" id="container-cubo"></div>
+
+  <h2>Esfera iluminada con luz direccional</h2>
+  <div class="canvas-container" id="container-esfera"></div>
+
+  <!-- Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <!-- OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/controls/OrbitControls.min.js"></script>
+
+  <script>
+    // --- Cubo giratorio ---
+    (() => {
+      const container = document.getElementById('container-cubo');
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.z = 5;
+
+      const renderer = new THREE.WebGLRenderer({antialias: true});
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(renderer.domElement);
+
+      // Cubo con material normal (colores según normales)
+      const geometry = new THREE.BoxGeometry();
+      const material = new THREE.MeshNormalMaterial();
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      // Luz ambiental suave para mejor contraste (opcional)
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+      scene.add(ambientLight);
+
+      // Animación
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // Ajustar tamaño al cambiar ventana
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    })();
+
+    // --- Esfera iluminada ---
+    (() => {
+      const container = document.getElementById('container-esfera');
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.z = 4;
+
+      const renderer = new THREE.WebGLRenderer({antialias: true});
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(renderer.domElement);
+
+      // Esfera con material estándar (PBR)
+      const geometry = new THREE.SphereGeometry(1.5, 32, 32);
+      const material = new THREE.MeshStandardMaterial({ color: 0x3399ff, roughness: 0.4, metalness: 0.6 });
+      const sphere = new THREE.Mesh(geometry, material);
+      scene.add(sphere);
+
+      // Luces
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(5, 5, 5);
+      scene.add(directionalLight);
+
+      const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+      scene.add(ambientLight);
+
+      // Animación simple: rotar esfera
+      function animate() {
+        requestAnimationFrame(animate);
+        sphere.rotation.y += 0.005;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // Ajustar tamaño
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    })();
+
+  </script>
+</body>
+</html>
