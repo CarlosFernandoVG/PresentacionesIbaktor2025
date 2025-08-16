@@ -1,0 +1,5 @@
+El total de ventas por categoría queda desglozado en la siguiente lista:
+
+En la categoría Escencial, se obtuvo una venta total de 124.94999999999999
+En la categoría Electrónica, se obtuvo una venta total de 1799.98
+En la categoría Accesorios, se obtuvo una venta total de 215.54999999999998
