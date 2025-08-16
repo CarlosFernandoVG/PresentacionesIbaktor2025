@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desktop First Demo</title>
+<style>
+  /* Estilo base (Desktop First) */
+  .content {
+    background-color: lightblue;
+    padding: 40px;
+    font-size: 1.5rem; /* base desktop */
+    text-align: center;
+    font-weight: bold;
+    transition: all 0.3s ease; /* transición suave al cambiar tamaño/color */
+  }
+
+  /* Media query para pantallas menores a 768px (móvil) */
+  @media (max-width: 768px) {
+    .content {
+      background-color: lightgreen;
+      font-size: 1rem;
+      padding: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="content">Desktop First</div>
+
+</body>
+</html>

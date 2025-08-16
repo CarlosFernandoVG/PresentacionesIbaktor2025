@@ -1,0 +1,74 @@
+<!-- 
+Botón con icono:  
+  aria-label hace que el lector de pantalla diga “Cerrar ventana”, aunque el texto visual sea solo ×.
+Menú desplegable: 
+  role="menu" y role="menuitem" indican la estructura del menú.
+  aria-haspopup y aria-expanded informan si el menú está abierto.
+Notificación dinámica:
+  role="status" y aria-live="polite" hacen que el contenido se lea automáticamente cuando aparece.
+Interactividad:
+  Al hacer clic, el menú se abre/cierra y las notificaciones aparecen, mostrando cómo ARIA comunica cambios dinámicos.
+-->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ejemplo ARIA</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  .menu { margin: 10px 0; }
+  .menu ul { display: none; list-style: none; padding: 0; margin: 5px 0; border: 1px solid #ccc; }
+  .menu ul li { padding: 5px; background-color: #f0f0f0; margin-bottom: 2px; }
+  .menu ul li:hover { background-color: #ddd; cursor: pointer; }
+  .notification { margin-top: 20px; padding: 10px; background-color: #e0f7fa; display: none; }
+</style>
+</head>
+<body>
+
+<h1>Demo de ARIA</h1>
+
+<!-- Botón con aria-label -->
+<button aria-label="Cerrar ventana" onclick="alert('Ventana cerrada')">
+  <span aria-hidden="true">&times;</span> Cerrar
+</button>
+
+<!-- Menú desplegable accesible -->
+<div class="menu" role="menu" aria-label="Opciones de usuario">
+  <button id="perfilBtn" aria-haspopup="true" aria-expanded="false" onclick="toggleMenu()">
+    Perfil ▼
+  </button>
+  <ul id="perfilMenu">
+    <li role="menuitem" onclick="alert('Configuración seleccionada')">Configuración</li>
+    <li role="menuitem" onclick="alert('Cerrar sesión seleccionada')">Cerrar sesión</li>
+  </ul>
+</div>
+
+<!-- Notificación dinámica -->
+<div class="notification" id="noti" role="status" aria-live="polite">
+  Nuevo mensaje recibido!
+</div>
+
+<button onclick="showNotification()">Mostrar notificación</button>
+
+<script>
+  // Función para abrir/cerrar menú
+  function toggleMenu() {
+    const menu = document.getElementById('perfilMenu');
+    const btn = document.getElementById('perfilBtn');
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    menu.style.display = expanded ? 'none' : 'block';
+    btn.setAttribute('aria-expanded', !expanded);
+  }
+
+  // Función para mostrar notificación dinámica
+  function showNotification() {
+    const noti = document.getElementById('noti');
+    noti.style.display = 'block';
+    setTimeout(() => noti.style.display = 'none', 3000);
+  }
+</script>
+
+</body>
+</html>

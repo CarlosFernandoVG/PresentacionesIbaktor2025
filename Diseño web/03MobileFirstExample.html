@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobile First Demo</title>
+<style>
+  /* Estilo base (Mobile First) */
+  .content {
+    background-color: lightgreen;
+    padding: 20px;
+    font-size: 1rem; /* base móvil */
+    text-align: center;
+    font-weight: bold;
+    transition: all 0.3s ease; /* transición suave */
+  }
+
+  /* Desktop: ampliamos para pantallas ≥1024px */
+  @media (min-width: 1024px) {
+    .content {
+      background-color: lightblue;
+      font-size: 1.5rem;
+      padding: 40px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="content">Mobile First</div>
+
+</body>
+</html>
